@@ -121,7 +121,7 @@ job. Startup and inherited pipes can delay return. Synthetic direct-child tests
 passed on Windows and WSL Ubuntu. Live provider cancellation was not tested.
 
 Repository structure and contributor detail are in the
-[maintenance notes](docs/maintenance.md).
+[maintenance notes](development/docs/maintenance.md).
 
 ## Failure behavior
 
@@ -169,13 +169,15 @@ Deterministic adapter tests cover result parsing, configuration, UTF-8,
 sessions, and synthetic deadlines. They do not prove model quality or complete
 host orchestration.
 
+Repository development and the current path mapping are in [development/](development/README.md).
+
 ## Sources
 
 - [`SKILL.md`](ask-claude-and-astra-for-codex/SKILL.md) defines activation,
   orchestration, authority, and failure behavior.
 - [`ask_claude.py`](ask-claude-and-astra-for-codex/scripts/ask_claude.py) implements
   the Claude transport.
-- [`test_ask_claude.py`](tests/test_ask_claude.py) defines deterministic adapter
+- [`test_ask_claude.py`](development/tests/test_ask_claude.py) defines deterministic adapter
   coverage.
 - [OpenAI Codex subagents](https://developers.openai.com/codex/subagents/)
   documents host-native parallel agents in current Codex releases.
