@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ask Claude and Astra for Codex"
+  short_description: "Claude plus a fresh Astra subagent"
+  default_prompt: "Use $ask-claude-and-astra-for-codex to ask Claude and a fresh Astra subagent for parallel second opinions."
