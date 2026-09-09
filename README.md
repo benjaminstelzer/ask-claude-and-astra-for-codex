@@ -4,7 +4,7 @@ A second opinion is useful. Two independent second opinions are more useful
 when they do not take turns borrowing each other's assumptions.
 
 Ask Claude and Astra for Codex is an Agent Skill that sends one question to
-Claude Code and a fresh Codex Astra subagent in parallel. Claude runs through its
+Claude Code and a fresh normal Codex Astra project task in parallel. Claude runs through its
 own authenticated CLI. Astra runs inside the Codex host that invoked the Skill,
 so it needs no second Codex CLI, runtime installation, executable lookup, or
 login.
@@ -14,7 +14,7 @@ The defaults are **Fable 5.1 with high reasoning effort** and **GPT-6 Astra with
 
 ## Why this Skill?
 
-A fresh Astra subagent receives the same self-contained question as Claude,
+A fresh Astra project task receives the same self-contained question as Claude,
 without copied parent turns or the other adviser's answer. It uses the existing
 Codex host rather than launching another Codex CLI.
 
@@ -44,8 +44,8 @@ Unless overridden, the Skill uses:
 | Model | `claude-fable-5-1` | `gpt-6-astra` |
 | Reasoning effort | `high` | `xhigh` |
 | Budget ceiling | USD 10 | Host/account limit |
-| Context | Independent Claude session | Fresh subagent, no copied parent turns |
-| Continuation | Claude session ID | Agent target in the current Codex task |
+| Context | Independent Claude session | Fresh normal task in the current project |
+| Continuation | Claude session ID | Archived task ID, temporarily unarchived for follow-ups |
 | Filesystem boundary | Fixed read-only tools | Host permissions plus a read-only instruction |
 | Local customizations | Disabled by Claude safe mode | Host configuration may still apply |
 
@@ -65,9 +65,10 @@ location. Manual fallback: [Codex Skills guide](https://learn.chatgpt.com/docs/b
 
 Requires Python 3.9 or newer and an authenticated Claude Code 2.1.255 or newer.
 Claude usage limits and model charges apply.
-The Codex host also needs subagents and access to `gpt-6-astra` with `xhigh`
-effort. No separate Codex CLI is required. Missing subagent support produces a
-partial consultation when Claude succeeds, not a fallback runtime.
+The Codex host also needs normal project-task creation, waiting, messaging and
+archival plus access to `gpt-6-astra` with `xhigh` effort. No separate Codex CLI
+is required. Missing task support produces a partial consultation when Claude
+succeeds, not a fallback runtime.
 
 ## What it enforces
 
@@ -78,7 +79,7 @@ partial consultation when Claude succeeds, not a fallback runtime.
 
 ## How it works
 
-Codex prepares one consultation body, starts a fresh Astra subagent, then
+Codex prepares one consultation body, starts a fresh normal Astra project task, then
 starts Claude without waiting for Astra. It collects both answers and presents
 them separately before comparing agreement, disagreement, and useful checks.
 The Python adapter owns Claude transport. The host owns paired orchestration.
@@ -100,14 +101,11 @@ you need. Both Skills can coexist, selected by explicit name.
 
 ### Follow-ups
 
-The first consultation retains Claude's session ID and Astra's agent target.
-A paired follow-up resumes both. A provider-specific follow-up contacts only
-that adviser. Missing handles leave the surviving result explicitly partial.
-The host's follow-up control must wake an idle subagent, not merely send it a
-passive message.
-
-The Astra target is valid within the current Codex task. Spawning another
-agent or opening another task starts a fresh consultation, not a continuation.
+The first consultation retains Claude's session ID and Astra's task ID. After
+the result is preserved, the Astra task is archived. A paired follow-up
+temporarily unarchives and messages it, resumes Claude, collects both results and
+archives Astra again. A provider-specific follow-up contacts only that adviser.
+Missing handles leave the surviving result explicitly partial.
 
 ### Optional Claude deadline
 
@@ -130,7 +128,7 @@ Repository structure and contributor detail are in the
   unavailable.
 - **Failed:** neither provider returned an answer.
 
-Missing subagent support never triggers a Codex CLI fallback. A Claude failure
+Missing normal project-task support never triggers a Codex CLI or subagent fallback. A Claude failure
 never discards a successful Astra result. Agreement is still not proof. The
 calling Codex must verify claims before they become edits, Decisions,
 publication, spending, or another confident victory speech from a green unit
@@ -142,9 +140,9 @@ Claude receives only `Read`, `Grep`, `Glob`, `WebSearch`, and `WebFetch`, with
 Bash, Edit, and Write withheld. Safe mode disables local Claude
 customizations.
 
-Astra receives a fresh conversation plus a read-only instruction. The current
-host spawn interface does not give this Skill a separate sandbox or approval
-policy for that subagent. Host-level system instructions, tools, permissions,
+Astra receives a fresh normal project task plus a read-only instruction. The
+current host task interface does not give this Skill a separate sandbox or approval
+policy. Host-level system instructions, tools, permissions,
 Skills, plugins, and other capabilities may still apply. The Skill therefore
 claims conversational independence, not a customization-free or separately
 sandboxed Astra runtime.
@@ -153,6 +151,15 @@ Read-only intent does not make arbitrary content safe to disclose. Search
 queries and fetched URLs leave the local machine. Prompts must not contain
 credentials, tokens, private keys, secret-bearing URLs, private source text
 that should not reach either provider, or unrelated personal data.
+
+## Codex task lifecycle
+
+On 2026-09-09, the tested Codex Desktop tool surface could create, wait for,
+message and archive normal project tasks, but exposed no control whose documented
+semantics close a completed subagent and free its slot. The Skill therefore uses
+no subagent: it preserves Astra's result, archives the normal task, and verifies
+the archived state. Archiving is sidebar cleanup, not a claim that a subagent slot
+was freed. Hosts lacking the normal task controls return a partial result.
 
 ## Status
 
@@ -164,6 +171,10 @@ reused both continuation handles. The host reported `gpt-6-astra` with `xhigh`
 in both Astra turns. Exact initial prompt-body equality was not independently
 verifiable from the exported trace. Real provider failures in both directions,
 missing handles, and cross-task continuation were not tested.
+
+That run used the superseded subagent transport. The normal project-task and
+archive workflow added on 2026-09-09 has deterministic instruction coverage but
+has not yet been exercised in a live paired consultation.
 
 Deterministic adapter tests cover result parsing, configuration, UTF-8,
 sessions, and synthetic deadlines. They do not prove model quality or complete
@@ -179,11 +190,11 @@ Repository development and the current path mapping are in [development/](develo
   the Claude transport.
 - [`test_ask_claude.py`](development/tests/test_ask_claude.py) defines deterministic adapter
   coverage.
-- [OpenAI Codex subagents](https://developers.openai.com/codex/subagents/)
-  documents host-native parallel agents in current Codex releases.
+- [OpenAI Codex tasks](https://learn.chatgpt.com/docs/codex)
+  documents the Codex task surface used for the temporary Astra conversation.
 - [OpenAI GPT-6 Astra](https://developers.openai.com/api/docs/models/gpt-6-astra)
-  documents the requested model and its `xhigh` reasoning setting. Actual
-  subagent access depends on the invoking host and account.
+  documents the requested model and its `xhigh` reasoning setting. Actual task
+  access depends on the invoking host and account.
 - [Anthropic Claude Code setup](https://code.claude.com/docs/en/setup) documents
   Claude installation and authentication.
 

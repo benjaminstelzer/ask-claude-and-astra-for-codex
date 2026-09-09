@@ -1,4 +1,4 @@
 interface:
   display_name: "Ask Claude and Astra for Codex"
-  short_description: "Claude plus a fresh Astra subagent"
-  default_prompt: "Use $ask-claude-and-astra-for-codex to ask Claude and a fresh Astra subagent for parallel second opinions."
+  short_description: "Claude plus a fresh Astra project task"
+  default_prompt: "Use $ask-claude-and-astra-for-codex to ask Claude and a fresh normal Astra task in the current project for parallel second opinions, then archive the Astra task after preserving its result."
