@@ -117,8 +117,7 @@ It terminates and waits for the direct child, not a whole process tree or remote
 job. Startup and inherited pipes can delay return. Synthetic direct-child tests
 passed on Windows and WSL Ubuntu. Live provider cancellation was not tested.
 
-Repository structure and contributor detail are in the
-[maintenance notes](development/docs/maintenance.md).
+Repository validation and retention rules are in [development](development/README.md).
 
 ## Failure behavior
 
@@ -178,8 +177,6 @@ has not yet been exercised in a live paired consultation.
 Deterministic adapter tests cover result parsing, configuration, UTF-8,
 sessions, and synthetic deadlines. They do not prove model quality or complete
 host orchestration.
-
-Repository development and the current path mapping are in [development/](development/README.md).
 
 ## Sources
 
