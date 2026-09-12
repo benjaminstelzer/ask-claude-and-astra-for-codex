@@ -119,6 +119,20 @@ passed on Windows and WSL Ubuntu. Live provider cancellation was not tested.
 
 Repository validation and retention rules are in [development](development/README.md).
 
+## How it was developed
+
+I derived this edition from the Claude and SOL workflow and tested the Astra
+consultation separately. An early paired run exercised both providers and
+follow-up handles. Later development moved Astra to normal project tasks and
+direct answer delivery, so that earlier run is not evidence for the current
+transport. The [changelog](CHANGELOG.md) records those changes and the handling
+of an unavailable provider without discarding the other answer.
+
+I use real consultation histories to keep improving the Skill. Reading the
+complete task makes lost answers, repeated context and unnecessary token use
+visible in a way the final response alone cannot. Those findings feed the next
+instruction changes and focused checks.
+
 ## Failure behavior
 
 - **Complete:** Claude and Astra both returned answers.
@@ -197,17 +211,3 @@ host orchestration.
 ## License
 
 MIT. See [LICENSE](LICENSE).
-
-## How it was developed
-
-I derived this edition from the Claude and SOL workflow and tested the Astra
-consultation separately. An early paired run exercised both providers and
-follow-up handles. Later development moved Astra to normal project tasks and
-direct answer delivery, so that earlier run is not evidence for the current
-transport. The [changelog](CHANGELOG.md) records those changes and the handling
-of an unavailable provider without discarding the other answer.
-
-I use real consultation histories to keep improving the Skill. Reading the
-complete task makes lost answers, repeated context and unnecessary token use
-visible in a way the final response alone cannot. Those findings feed the next
-instruction changes and focused checks.
