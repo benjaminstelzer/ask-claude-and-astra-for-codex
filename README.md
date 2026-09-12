@@ -1,13 +1,13 @@
 # Ask Claude and Astra for Codex
 
-A second opinion is useful. Two independent second opinions are more useful
-when they do not take turns borrowing each other's assumptions.
+Two advisers can find different problems if each gets room to reach its own
+conclusion. This Skill sends the same question to both before either sees the
+other's answer.
 
 Ask Claude and Astra for Codex is an Agent Skill that sends one question to
 Claude Code and a fresh normal Codex Astra project task in parallel. Claude runs through its
 own authenticated CLI. Astra runs inside the Codex host that invoked the Skill,
-so it needs no second Codex CLI, runtime installation, executable lookup, or
-login.
+so it needs no separate Codex CLI installation or login.
 
 The defaults are **Fable 5.1 with high reasoning effort** and **GPT-6 Astra with
 `xhigh` (very high) reasoning effort**.
@@ -113,25 +113,19 @@ and is disabled by default. Expiry returns exit 124 without an automatic retry,
 budget increase, or success answer. A known resume ID survives the error, but an
 interrupted turn is not guaranteed to be saved.
 
-It terminates and waits for the direct child, not a whole process tree or remote
-job. Startup and inherited pipes can delay return. Synthetic direct-child tests
-passed on Windows and WSL Ubuntu. Live provider cancellation was not tested.
-
-Repository validation and retention rules are in [development](development/README.md).
+The deadline terminates the direct child process. It does not guarantee that
+remote work stops, and startup or inherited pipes can delay return.
 
 ## How it was developed
 
-I derived this edition from the Claude and SOL workflow and tested the Astra
-consultation separately. An early paired run exercised both providers and
-follow-up handles. Later development moved Astra to normal project tasks and
-direct answer delivery, so that earlier run is not evidence for the current
-transport. The [changelog](CHANGELOG.md) records those changes and the handling
-of an unavailable provider without discarding the other answer.
+This edition grew out of Ask Claude and SOL. I kept the paired question and
+separate follow-ups, then adapted the Codex side for Astra. Later revisions
+moved the adviser into a normal project task so its answer could return directly
+and the conversation could be archived without losing it.
 
-I use real consultation histories to keep improving the Skill. Reading the
-complete task makes lost answers, repeated context and unnecessary token use
-visible in a way the final response alone cannot. Those findings feed the next
-instruction changes and focused checks.
+I examine complete consultation histories because the final answer can hide a
+failed delivery, confused follow-up or repeated context. The
+[changelog](CHANGELOG.md) traces those changes.
 
 ## Failure behavior
 
@@ -141,10 +135,8 @@ instruction changes and focused checks.
 - **Failed:** neither provider returned an answer.
 
 Missing normal project-task support never triggers a Codex CLI or subagent fallback. A Claude failure
-never discards a successful Astra result. Agreement is still not proof. The
-calling Codex must verify claims before they become edits, Decisions,
-publication, spending, or another confident victory speech from a green unit
-test.
+never discards a successful Astra result. The calling Codex still needs to verify the advice before acting on it, even
+when both advisers agree.
 
 ## Independence and security limits
 
@@ -164,33 +156,10 @@ queries and fetched URLs leave the local machine. Prompts must not contain
 credentials, tokens, private keys, secret-bearing URLs, private source text
 that should not reach either provider, or unrelated personal data.
 
-## Codex task lifecycle
-
-On 2026-09-09, the tested Codex Desktop tool surface could create, wait for,
-message and archive normal project tasks, but exposed no control whose documented
-semantics close a completed subagent and free its slot. The Skill therefore uses
-no subagent: it preserves Astra's result, archives the normal task, and verifies
-the archived state. Archiving is sidebar cleanup, not a claim that a subagent slot
-was freed. Hosts lacking the normal task controls return a partial result.
-
 ## Status
 
-Separate Astra edition derived from Ask Claude and SOL v2.0.1. SOL history
-is provenance, not Astra acceptance evidence.
-
-A focused 2026-09-05 run observed parallel Claude and Astra consultations and
-reused both continuation handles. The host reported `gpt-6-astra` with `xhigh`
-in both Astra turns. Exact initial prompt-body equality was not independently
-verifiable from the exported trace. Real provider failures in both directions,
-missing handles, and cross-task continuation were not tested.
-
-That run used the superseded subagent transport. The normal project-task and
-archive workflow added on 2026-09-09 has deterministic instruction coverage but
-has not yet been exercised in a live paired consultation.
-
-Deterministic adapter tests cover result parsing, configuration, UTF-8,
-sessions, and synthetic deadlines. They do not prove model quality or complete
-host orchestration.
+The current project-task workflow has not yet been tested in a live paired
+consultation. Earlier runs used a transport that has since been replaced.
 
 ## Sources
 
